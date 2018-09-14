@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# This file extends the .bashrc file
+# with commands that are workspace
+# specific that shouldnt be stored
+# in the git repository
