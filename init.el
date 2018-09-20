@@ -138,12 +138,18 @@
 
 (define-key js-mode-map (kbd "M-.") nil)
 (add-hook 'js2-mode-hook (lambda ()
+			   (set-variable 'js2-strict-missing-semi-warning nil)
+			   (set-variable 'indent-tabs-mode nil)
 			   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+
+(flycheck-add-mode 'javascript-eslint 'js2-mode)
+
 
 (require 'company)
 (require 'company-tern)
 (add-to-list 'company-backends 'company-tern)
 (add-hook 'js2-mode-hook (lambda ()
+			   (setq js2-basic-offset 2)
 			   (tern-mode)
 			   (company-mode)))
 (define-key tern-mode-keymap (kbd "M-.") nil)
