@@ -19,9 +19,10 @@ deploy_dot_file () { # $1 source file $2 symlink file name # $3 symlink filepath
     fi
 }
 
-deploy_dot_file bash_profile ~/.bash_profile
-deploy_dot_file bashrc ~/.bashrc
-deploy_dot_file gitignore ~/.gitignore
-deploy_dot_file init.el init.el ~/.emacs.d/
-deploy_dot_file tmux.conf ~/.tmux.conf
-deploy_dot_file work ~/.work
+# deploy scritp   source file          symlink location       symlink filepath
+deploy_dot_file   $(pwd)/bash_profile  "$HOME/.bash_profile"
+deploy_dot_file   $(pwd)/bashrc        "$HOME/.bashrc"
+deploy_dot_file   $(pwd)/gitignore     "$HOME/.gitignore"
+deploy_dot_file   $(pwd)/init.el       init.el               "$HOME/.emacs.d/"
+deploy_dot_file   $(pwd)/tmux.conf     "$HOME/.tmux.conf"
+deploy_dot_file   $(pwd)/work          "$HOME/.work"
