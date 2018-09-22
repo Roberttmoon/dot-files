@@ -9,20 +9,18 @@ deploy_dot_file () { # $1 source file $2 symlink file name # $3 symlink filepath
     if [ ! -z "$3" -a -d "$3" ]; then
 	mkdir -p "$3"
     fi
-    if [ -f "$2" -a  -s "$2" ]; then
-	mv "$2" "$2.backup"
+    if [ -f "$3$2" -a  -s "$3$2" ]; then
+	mv "$3$2" "$3$2.backup"
     fi
     if [ -z "$3" ]; then
-	ln -s "$1" "$2"
-    else
 	ln -s "$1" "$3$2"
     fi
 }
 
-# deploy scritp   source file          symlink location       symlink filepath
-deploy_dot_file   $(pwd)/bash_profile  "$HOME/.bash_profile"
-deploy_dot_file   $(pwd)/bashrc        "$HOME/.bashrc"
-deploy_dot_file   $(pwd)/gitignore     "$HOME/.gitignore"
-deploy_dot_file   $(pwd)/init.el       init.el               "$HOME/.emacs.d/"
-deploy_dot_file   $(pwd)/tmux.conf     "$HOME/.tmux.conf"
-deploy_dot_file   $(pwd)/work          "$HOME/.work"
+# deploy scritp   source file          symlink location  symlink filepath
+deploy_dot_file   $(pwd)/bash_profile  ".bash_profile"   "$HOME/"
+deploy_dot_file   $(pwd)/bashrc        ".bashrc"         "$HOME/"
+deploy_dot_file   $(pwd)/gitignore     ".gitignore"      "$HOME/"
+deploy_dot_file   $(pwd)/init.el       init.el           "$HOME/.emacs.d/"
+deploy_dot_file   $(pwd)/tmux.conf     ".tmux.conf"      "$HOME/"
+deploy_dot_file   $(pwd)/work          ".work"           "$HOME/"
