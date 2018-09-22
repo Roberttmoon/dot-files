@@ -28,6 +28,7 @@
     exec-path-from-shell
     yaml-mode
     elmacro
+    company
     ;; terraform tools
     terraform-mode
     hcl-mode
@@ -36,7 +37,13 @@
     ;; python tools
     elpy
     ein
-    py-autopep8))
+    py-autopep8
+    ;; javascript tools
+    js2-mode
+    js2-refactor
+    xref-js2
+    company-tern
+    indium))
 
 (mapc #'(lambda (package)
     (unless (package-installed-p package)
@@ -111,6 +118,41 @@
   (add-hook 'elpy-mode-hook 'flycheck-mode))
 (require 'py-autopep8)
 (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
+
+;;;;             ;;;;
+;; javascript mode ;;
+;;;;             ;;;;
+
+(require 'js2-mode)
+ 
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+
+(require 'js2-refactor)
+(require 'xref-js2)
+
+(add-hook 'js2-mode-hook #'js2-refactor-mode)
+(js2r-add-keybindings-with-prefix "C-c C-r")
+(define-key js2-mode-map (kbd "C-k") #'js2r-kill)
+
+(define-key js-mode-map (kbd "M-.") nil)
+(add-hook 'js2-mode-hook (lambda ()
+			   (set-variable 'js2-strict-missing-semi-warning nil)
+			   (set-variable 'indent-tabs-mode nil)
+			   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+
+(flycheck-add-mode 'javascript-eslint 'js2-mode)
+
+
+(require 'company)
+(require 'company-tern)
+(add-to-list 'company-backends 'company-tern)
+(add-hook 'js2-mode-hook (lambda ()
+			   (setq js2-basic-offset 2)
+			   (tern-mode)
+			   (company-mode)))
+(define-key tern-mode-keymap (kbd "M-.") nil)
+(define-key tern-mode-keymap (kbd "M-,") nil)
 
 ;;;;            ;;;;
 ;; terraform mode ;;
