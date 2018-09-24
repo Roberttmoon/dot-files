@@ -1,3 +1,7 @@
+#!/bin/bash
+# -*-shell-script-*-
+# vim: set filetype=sh :
+
 # COLORS!!!!
 NORMAL="\[\033[00m\]"
 PURPLE="\[\033[01;34m\]"
@@ -74,3 +78,7 @@ export GOROOT=/usr/local/go
 export GOPATH=~/Development/gocode
 export PATH=$PATH:$GOROOT/bin
 export PATH=$PATH:$GOPATH/bin
+
+# tree stuff
+alias treejs='echo "skipping node_moudles" && tree -a -I ".git|node_modules"'
+alias treepy='echo "skipping venv" && tree -a -I ".git|venv"'
