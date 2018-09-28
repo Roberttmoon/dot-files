@@ -90,6 +90,7 @@
 (load-theme 'heroku t) ;; load material theme
 (global-linum-mode t) ;; enable line numbers globally
 (exec-path-from-shell-initialize)
+(setq-default indent-tabs-mode nil)
 (require 'neotree)
 (global-set-key [f9] 'neotree-toggle)
 
