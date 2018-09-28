@@ -29,6 +29,7 @@ mkmd () { # $1 input org file, $2 output md file
 }
 
 # Bash Stuff
+export HISTCONTROL=ignoreboth:erasedups
 
 __ps1_on () {
     items_on="$(__git_ps1)"
