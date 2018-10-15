@@ -29,6 +29,7 @@
     yaml-mode
     elmacro
     company
+    auto-complete
     ;; terraform tools
     terraform-mode
     hcl-mode
@@ -43,7 +44,14 @@
     js2-refactor
     xref-js2
     company-tern
-    indium))
+    indium
+    ;; lua tools
+    lua-mode
+    company-lua
+    flymake-lua
+    ;; go tools
+    go-mode
+    ))
 
 (mapc #'(lambda (package)
     (unless (package-installed-p package)
@@ -155,6 +163,49 @@
 (define-key tern-mode-keymap (kbd "M-.") nil)
 (define-key tern-mode-keymap (kbd "M-,") nil)
 
+;;;;      ;;;;
+;; lua mode ;;
+;;;;      ;;;;
+
+(autoload 'lua-mode "lua-mode" "Lua editing mode." t)
+(add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
+(require 'company-lua)
+(require 'flycheck)
+(add-hook 'lua-mode-hook 'flycheck-mode)
+(add-hook 'lua-mode-hook (lambda ()
+                           (company-lua)))
+
+
+;;;;     ;;;;
+;; go mode ;;
+;;;;     ;;;;
+
+(defun set-exec-path-from-shell-PATH ()
+  (let ((path-from-shell (replace-regexp-in-string
+                          "[ \t\n]*$"
+                          ""
+                          (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
+    (setenv "PATH" path-from-shell)
+    (setq eshell-path-env path-from-shell) ; for eshell users
+    (setq exec-path (split-string path-from-shell path-separator))))
+
+(when window-system (set-exec-path-from-shell-PATH))
+(setenv "GOPATH" "/Users/tleyden/Development/gocode")
+
+(defun my-go-mode-hook ()
+  ; Use goimports instead of go-fmt
+  (setq gofmt-command "goimports")
+  ; Call Gofmt before saving
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  ; Customize compile command to run go build
+  (if (not (string-match "go" compile-command))
+      (set (make-local-variable 'compile-command)
+           "go build -v && go test -v && go vet"))
+  ; Godef jump key binding
+  (local-set-key (kbd "M-.") 'godef-jump)
+  (local-set-key (kbd "M-*") 'pop-tag-mark))
+(add-hook 'go-mode-hook 'my-go-mode-hook)
+
 ;;;;            ;;;;
 ;; terraform mode ;;
 ;;;;            ;;;;
@@ -178,7 +229,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (pass password-store restclient neotree heroku-theme heroku better-defaults))))
+    (company-lua flymake-lua pass password-store restclient neotree heroku-theme heroku better-defaults))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
