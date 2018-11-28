@@ -6,10 +6,8 @@
       user-mail-address "robertmoon@northwesternmutual.com")
 
 (electric-pair-mode 1)
-(setq electric-pair-pairs '(
-                            (?\" . ?\")
-                            (?\{ . ?\})
-                            ) )
+(setq electric-pair-pairs '((?\" . ?\")
+                            (?\{ . ?\})))
 
 (require 'package)
 
@@ -99,8 +97,14 @@
 (global-linum-mode t) ;; enable line numbers globally
 (exec-path-from-shell-initialize)
 (setq-default indent-tabs-mode nil)
+(custom-set-variables
+ '(tab-with 4 't))
+(defvaralias 'c-basic-offset 'tab-width)
+(defvaralias 'cperl-indent-level 'tab-width)
+
 (require 'neotree)
-(global-set-key [f9] 'neotree-toggle)
+(global-set-key [f8] 'neotree-toggle)
+(global-set-key [f9] 'neotree-show)
 
 ;;;;          ;;;;
 ;; elmacro mode ;;
@@ -229,7 +233,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (company-lua flymake-lua pass password-store restclient neotree heroku-theme heroku better-defaults))))
+    (magit company-lua flymake-lua pass password-store restclient neotree heroku-theme heroku better-defaults))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -83,3 +83,16 @@ export PATH=$PATH:$GOPATH/bin
 # tree stuff
 alias treejs='echo "skipping node_moudles" && tree -a -I ".git|node_modules"'
 alias treepy='echo "skipping venv" && tree -a -I ".git|venv"'
+alias treego='echo "skipping vender" && tree -a -I ".git|vender"'
+
+# git stuff
+git_whoops () { # $1 file that is to be removed form history
+    if [ -z $1 ]; then
+        echo 'please list a path to remvoe from git'
+    else
+        echo "remving path: '$1' from git and git's history"
+        git filter-branch --force --index-filter \
+            "git rm -r --cached --ignore-unmatch $1" \
+            --prune-empty --tag-name-filter cat -- --all
+    fi
+}
