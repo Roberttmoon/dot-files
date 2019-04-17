@@ -20,6 +20,7 @@
 
 (defvar myPackages
   '(better-defaults
+    yasnippet
     heroku-theme
     flycheck
     neotree
@@ -28,6 +29,8 @@
     elmacro
     company
     auto-complete
+    ;; gitlab-ci tools
+    gitlab-ci-mode
     ;; terraform tools
     terraform-mode
     hcl-mode
@@ -49,6 +52,8 @@
     flymake-lua
     ;; go tools
     go-mode
+    go-autocomplete
+    company-go
     ))
 
 (mapc #'(lambda (package)
@@ -93,14 +98,26 @@
 ;;;;          ;;;;
 
 (setq inhibit-startup-message t) ;; hide the startup message
-(load-theme 'heroku t) ;; load material theme
+(load-theme 'material t) ;; load material theme
 (global-linum-mode t) ;; enable line numbers globally
 (exec-path-from-shell-initialize)
 (setq-default indent-tabs-mode nil)
 (custom-set-variables
- '(tab-with 4 't))
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("a24c5b3c12d147da6cef80938dca1223b7c7f70f2f382b26308eba014dc4833a" default)))
+ '(package-selected-packages
+   (quote
+    (flymake-shellcheck material-theme magit company-lua flymake-lua pass password-store restclient neotree heroku-theme heroku better-defaults)))
+ '(tab-with 4 t))
 (defvaralias 'c-basic-offset 'tab-width)
 (defvaralias 'cperl-indent-level 'tab-width)
+
+(yas-global-mode 1)
 
 (require 'neotree)
 (global-set-key [f8] 'neotree-toggle)
@@ -167,6 +184,13 @@
 (define-key tern-mode-keymap (kbd "M-.") nil)
 (define-key tern-mode-keymap (kbd "M-,") nil)
 
+;;;;          ;;;;
+;; emacs basics ;;
+;;;;          ;;;;
+
+(require 'gitlab-ci-mode)
+(add-to-list 'auto-mode-alist '(".gitlab-ci.yml" . gitlab-ci-mode))
+
 ;;;;      ;;;;
 ;; lua mode ;;
 ;;;;      ;;;;
@@ -184,6 +208,14 @@
 ;; go mode ;;
 ;;;;     ;;;;
 
+(require 'go-autocomplete)
+(require 'auto-complete-config)
+(ac-config-default)
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-env "GOPATH"))
+
+(setq go-tab-width 4)
 (defun set-exec-path-from-shell-PATH ()
   (let ((path-from-shell (replace-regexp-in-string
                           "[ \t\n]*$"
@@ -194,7 +226,7 @@
     (setq exec-path (split-string path-from-shell path-separator))))
 
 (when window-system (set-exec-path-from-shell-PATH))
-(setenv "GOPATH" "/Users/tleyden/Development/gocode")
+(setenv "GOPATH" "/Users/moo7594/Development/gocode")
 
 (defun my-go-mode-hook ()
   ; Use goimports instead of go-fmt
@@ -207,8 +239,37 @@
            "go build -v && go test -v && go vet"))
   ; Godef jump key binding
   (local-set-key (kbd "M-.") 'godef-jump)
-  (local-set-key (kbd "M-*") 'pop-tag-mark))
+  (local-set-key (kbd "M-*") 'pop-tag-mark)
+  (local-set-key (kbd "C-c C-f p") 'goprintf)
+  (local-set-key (kbd "C-c C-f e") 'goerrorf)
+  (local-set-key (kbd "C-c e") 'goerr)
+  (local-set-key (kbd "C-c o") 'gonotok))
 (add-hook 'go-mode-hook 'my-go-mode-hook)
+
+(defun goprintf ()
+  (interactive)
+  (insert "fmt.Printf(\"\\n\")")
+  (backward-char 4))
+(defun goerrorf ()
+  (interactive)
+  (insert "fmt.Errorf(\"\\n\")")
+  (backward-char 4))
+(defun goerr ()
+  (interactive)
+  (insert "if err != nil {}")
+  (backward-char 1)
+  (newline nil 1)
+  (insert "return nil, err")
+  (next-line 1 1)
+  (newline nil 1))
+(defun gonotok ()
+  (interactive)
+  (insert "if !ok {}")
+  (backward-char 1)
+  (newline nil 1)
+  (insert "return nil, fmt.Errorf(\"was not ok\\n\")")
+  (next-line 1 1)
+  (newline nil 1))
 
 ;;;;            ;;;;
 ;; terraform mode ;;
@@ -226,14 +287,7 @@
 ;; better defaults ;;
 ;;;;             ;;;;
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (magit company-lua flymake-lua pass password-store restclient neotree heroku-theme heroku better-defaults))))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

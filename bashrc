@@ -9,6 +9,13 @@ BLUE="\[\e[34m\]"
 CYAN="\[\e[36m\]"
 GREEN="\[\e[32m\]"
 
+# Path extention
+if [ ! -d "$HOME/bin/" ]; then
+    mkdir "$HOME/bin/"
+fi
+
+export PATH="$HOME/bin/:$PATH"
+
 # Brew
 if [ -f $(brew --prefix)/etc/bash_completion ]; then
   . $(brew --prefix)/etc/bash_completion
@@ -30,6 +37,7 @@ mkmd () { # $1 input org file, $2 output md file
 
 # Bash Stuff
 export HISTCONTROL=ignoreboth:erasedups
+export HISTFILESIZE=10000000
 
 __ps1_on () {
     items_on="$(__git_ps1)"
@@ -96,3 +104,5 @@ git_whoops () { # $1 file that is to be removed form history
             --prune-empty --tag-name-filter cat -- --all
     fi
 }
+
+source "$HOME/.work"
