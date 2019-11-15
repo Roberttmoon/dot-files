@@ -12,7 +12,7 @@
 (require 'package)
 
 (add-to-list 'package-archives
-	     '("melpa" . "http://melpa.org/packages/") t)
+	     '("melpa" . "https://melpa.org/packages/") t)
 
 (package-initialize)
 (when (not package-archive-contents)
@@ -27,8 +27,13 @@
     exec-path-from-shell
     yaml-mode
     elmacro
-    company
+    company    
     auto-complete
+    lsp-mode
+    lsp-ui
+    company-lsp
+    lsp-treemacs
+    dap-mode
     ;; gitlab-ci tools
     gitlab-ci-mode
     ;; terraform tools
@@ -46,6 +51,9 @@
     xref-js2
     company-tern
     indium
+    ;; typescript tools
+    typescript-mode
+    tide
     ;; lua tools
     lua-mode
     company-lua
@@ -112,7 +120,7 @@
     ("a24c5b3c12d147da6cef80938dca1223b7c7f70f2f382b26308eba014dc4833a" default)))
  '(package-selected-packages
    (quote
-    (flymake-shellcheck material-theme magit company-lua flymake-lua pass password-store restclient neotree heroku-theme heroku better-defaults)))
+    (typescript-mode auto-complete-sage bash-completion company-shell chess cider clojure-mode threes flymake-shellcheck material-theme magit company-lua flymake-lua pass password-store restclient neotree heroku-theme heroku better-defaults)))
  '(tab-with 4 t))
 (defvaralias 'c-basic-offset 'tab-width)
 (defvaralias 'cperl-indent-level 'tab-width)
@@ -135,6 +143,11 @@
 ;;;;       ;;;;
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+
+;;;;        ;;;;
+;; shell mode ;;
+;;;;        ;;;;
+(add-hook 'sh-mode-hook 'flycheck-mode)
 
 ;;;;         ;;;;
 ;; python mode ;;
@@ -191,6 +204,30 @@
 (require 'gitlab-ci-mode)
 (add-to-list 'auto-mode-alist '(".gitlab-ci.yml" . gitlab-ci-mode))
 
+;;;;             ;;;;
+;; typescript mode ;;
+;;;;             ;;;;
+
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  ;; company is an optional dependency. You have to
+  ;; install it separately via package-install
+  ;; `M-x package-install [ret] company`
+  (company-mode +1))
+
+;; aligns annotation to the right hand side
+(setq company-tooltip-align-annotations t)
+
+;; formats the buffer before saving
+(add-hook 'before-save-hook 'tide-format-before-save)
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+
 ;;;;      ;;;;
 ;; lua mode ;;
 ;;;;      ;;;;
@@ -203,73 +240,78 @@
 (add-hook 'lua-mode-hook (lambda ()
                            (company-lua)))
 
-
 ;;;;     ;;;;
 ;; go mode ;;
 ;;;;     ;;;;
 
-(require 'go-autocomplete)
-(require 'auto-complete-config)
-(ac-config-default)
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize)
-  (exec-path-from-shell-copy-env "GOPATH"))
+;; (use-package lsp-mode
+;;              :commands (lsp lsp-deferred))
+;; (add-hook 'go-mode-hook #'lsp-deferred)
+;; (use-package lsp-ui
+;;              :commands lsp-ui-mode)
+;; (use-package company-lsp
+;;              :commands company-lsp)
 
-(setq go-tab-width 4)
-(defun set-exec-path-from-shell-PATH ()
-  (let ((path-from-shell (replace-regexp-in-string
-                          "[ \t\n]*$"
-                          ""
-                          (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
-    (setenv "PATH" path-from-shell)
-    (setq eshell-path-env path-from-shell) ; for eshell users
-    (setq exec-path (split-string path-from-shell path-separator))))
+;; (setq go-tab-width 4)
+;; (defun set-exec-path-from-shell-PATH ()
+;;   (let ((path-from-shell (replace-regexp-in-string
+;;                           "[ \t\n]*$"
+;;                           ""
+;;                           (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
+;;     (setenv "PATH" path-from-shell)
+;;     (setq eshell-path-env path-from-shell) ; for eshell users
+;;     (setq exec-path (split-string path-from-shell path-separator))))
 
-(when window-system (set-exec-path-from-shell-PATH))
-(setenv "GOPATH" "/Users/moo7594/Development/gocode")
+;; (when window-system (set-exec-path-from-shell-PATH))
+;; (setenv "GOPATH" "/Users/moo7594/Development/gocode")
 
-(defun my-go-mode-hook ()
-  ; Use goimports instead of go-fmt
-  (setq gofmt-command "goimports")
-  ; Call Gofmt before saving
-  (add-hook 'before-save-hook 'gofmt-before-save)
-  ; Customize compile command to run go build
-  (if (not (string-match "go" compile-command))
-      (set (make-local-variable 'compile-command)
-           "go build -v && go test -v && go vet"))
-  ; Godef jump key binding
-  (local-set-key (kbd "M-.") 'godef-jump)
-  (local-set-key (kbd "M-*") 'pop-tag-mark)
-  (local-set-key (kbd "C-c C-f p") 'goprintf)
-  (local-set-key (kbd "C-c C-f e") 'goerrorf)
-  (local-set-key (kbd "C-c e") 'goerr)
-  (local-set-key (kbd "C-c o") 'gonotok))
-(add-hook 'go-mode-hook 'my-go-mode-hook)
+;; (defun my-go-mode-hook ()
+;;   ; Use goimports instead of go-fmt
+;;   (setq gofmt-command "goimports")
+;;   ; Call Gofmt before saving
+;;   (add-hook 'before-save-hook 'gofmt-before-save)
+;;   ; Customize compile command to run go build
+;;   (if (not (string-match "go" compile-command))
+;;       (set (make-local-variable 'compile-command)
+;;            "go build -v && go test -v && go vet"))
+;;   ; Godef jump key binding
+;;   (local-set-key (kbd "M-.") 'godef-jump)
+;;   (local-set-key (kbd "M-*") 'pop-tag-mark)
+;;   (local-set-key (kbd "C-c C-f p") 'goprintf)
+;;   (local-set-key (kbd "C-c C-f s") 'gosprintf)
+;;   (local-set-key (kbd "C-c C-f e") 'goerrorf)
+;;   (local-set-key (kbd "C-c e") 'goerr)
+;;   (local-set-key (kbd "C-c o") 'gonotok))
+;; (add-hook 'go-mode-hook 'my-go-mode-hook)
 
-(defun goprintf ()
-  (interactive)
-  (insert "fmt.Printf(\"\\n\")")
-  (backward-char 4))
-(defun goerrorf ()
-  (interactive)
-  (insert "fmt.Errorf(\"\\n\")")
-  (backward-char 4))
-(defun goerr ()
-  (interactive)
-  (insert "if err != nil {}")
-  (backward-char 1)
-  (newline nil 1)
-  (insert "return nil, err")
-  (next-line 1 1)
-  (newline nil 1))
-(defun gonotok ()
-  (interactive)
-  (insert "if !ok {}")
-  (backward-char 1)
-  (newline nil 1)
-  (insert "return nil, fmt.Errorf(\"was not ok\\n\")")
-  (next-line 1 1)
-  (newline nil 1))
+;; (defun goprintf ()
+;;   (interactive)
+;;   (insert "fmt.Printf(\"\\n\")")
+;;   (backward-char 4))
+;; (defun gosprintf ()
+;;   (interactive)
+;;   (insert "fmt.Sprintf(\"\\n\")")
+;;   (backward-char 4))
+;; (defun goerrorf ()
+;;   (interactive)
+;;   (insert "fmt.Errorf(\": %s\", err)")
+;;   (backward-char 11))
+;; (defun goerr ()
+;;   (interactive)
+;;   (insert "if err != nil {}")
+;;   (backward-char 1)
+;;   (newline nil 1)
+;;   (insert "return nil, err")
+;;   (next-line 1 1)
+;;   (newline nil 1))
+;; (defun gonotok ()
+;;   (interactive)
+;;   (insert "if !ok {}")
+;;   (backward-char 1)
+;;   (newline nil 1)
+;;   (insert "return nil, fmt.Errorf(\"was not ok\\n\")")
+;;   (next-line 1 1)
+;;   (newline nil 1))
 
 ;;;;            ;;;;
 ;; terraform mode ;;
