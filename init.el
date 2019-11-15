@@ -3,37 +3,44 @@
 ;;;;         ;;;;
 
 (setq user-full-name "Robert Moon"
-      user-mail-address "robertmoon@northwesternmutual.com")
+      user-mail-address "roberttmoon@gmail.com")
 
 (electric-pair-mode 1)
 (setq electric-pair-pairs '((?\" . ?\")
-                            (?\{ . ?\})))
+			    (?\{ . ?\})))
+
+(require 'gnutls)
+(add-to-list 'gnutls-trustfiles "/usr/local/etc/openssl/cert.pem")
+
+;;;;           ;;;;
+;; package setup ;;
+;;;;           ;;;;
 
 (require 'package)
-
 (add-to-list 'package-archives
 	     '("melpa" . "https://melpa.org/packages/") t)
 
 (package-initialize)
-(when (not package-archive-contents)
-  (package-refresh-contents))
-
 (defvar myPackages
-  '(better-defaults
-    yasnippet
-    heroku-theme
-    flycheck
+  '(;; system packages
+    use-package
     neotree
+    flycheck
+    company
+    auto-complete
+    yasnippet
     exec-path-from-shell
     yaml-mode
     elmacro
-    company    
-    auto-complete
+    better-defaults
+    ;; lsp stuff
     lsp-mode
     lsp-ui
     company-lsp
     lsp-treemacs
-    dap-mode
+    ;; themes!
+    heroku-theme
+    material-theme
     ;; gitlab-ci tools
     gitlab-ci-mode
     ;; terraform tools
@@ -41,10 +48,6 @@
     hcl-mode
     ;; docker tools
     dockerfile-mode
-    ;; python tools
-    elpy
-    ein
-    py-autopep8
     ;; javascript tools
     js2-mode
     js2-refactor
@@ -58,16 +61,15 @@
     lua-mode
     company-lua
     flymake-lua
-    ;; go tools
-    go-mode
-    go-autocomplete
-    company-go
     ))
 
 (mapc #'(lambda (package)
-    (unless (package-installed-p package)
-      (package-install package)))
+	  (unless (package-installed-p package)
+	    (package-install package)))
       myPackages)
+
+(when (not package-archive-contents)
+  (package-refresh-contents))
 
 ;;;;            ;;;;
 ;; terminal mouse ;;
@@ -104,32 +106,29 @@
 ;;;;          ;;;;
 ;; emacs basics ;;
 ;;;;          ;;;;
+(load-theme 'material t) ;; load material theme
 
 (setq inhibit-startup-message t) ;; hide the startup message
-(load-theme 'material t) ;; load material theme
+
 (global-linum-mode t) ;; enable line numbers globally
-(exec-path-from-shell-initialize)
 (setq-default indent-tabs-mode nil)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("a24c5b3c12d147da6cef80938dca1223b7c7f70f2f382b26308eba014dc4833a" default)))
- '(package-selected-packages
-   (quote
-    (typescript-mode auto-complete-sage bash-completion company-shell chess cider clojure-mode threes flymake-shellcheck material-theme magit company-lua flymake-lua pass password-store restclient neotree heroku-theme heroku better-defaults)))
- '(tab-with 4 t))
-(defvaralias 'c-basic-offset 'tab-width)
-(defvaralias 'cperl-indent-level 'tab-width)
+
 
 (yas-global-mode 1)
 
 (require 'neotree)
 (global-set-key [f8] 'neotree-toggle)
 (global-set-key [f9] 'neotree-show)
+
+(when (memq window-system '(mac x))
+  (exec-path-from-shell-initialize))
+
+;; Elisp
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (eldoc-mode)
+            (local-set-key (kbd "C-c b") 'eval-buffer)
+            (local-set-key (kbd "C-c r") 'eval-region)))
 
 ;;;;          ;;;;
 ;; elmacro mode ;;
@@ -141,26 +140,17 @@
 ;;;;       ;;;;
 ;; ymal mode ;;
 ;;;;       ;;;;
+
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+(require 'gitlab-ci-mode)
+(add-to-list 'auto-mode-alist '(".gitlab-ci.yml" . gitlab-ci-mode))
 
 ;;;;        ;;;;
 ;; shell mode ;;
 ;;;;        ;;;;
 (add-hook 'sh-mode-hook 'flycheck-mode)
 
-;;;;         ;;;;
-;; python mode ;;
-;;;;         ;;;;
-
-(elpy-enable)
-(setq python-shell-interpreter "ipython"
-      python-shell-interpreter-args "-i --simple-prompt")
-(when (require 'flycheck nil t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
-(require 'py-autopep8)
-(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 
 ;;;;             ;;;;
 ;; javascript mode ;;
@@ -184,8 +174,7 @@
 			   (set-variable 'indent-tabs-mode nil)
 			   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
 
-(flycheck-add-mode 'javascript-eslint 'js2-mode)
-
+;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
 
 (require 'company)
 (require 'company-tern)
@@ -196,13 +185,6 @@
 			   (company-mode)))
 (define-key tern-mode-keymap (kbd "M-.") nil)
 (define-key tern-mode-keymap (kbd "M-,") nil)
-
-;;;;          ;;;;
-;; emacs basics ;;
-;;;;          ;;;;
-
-(require 'gitlab-ci-mode)
-(add-to-list 'auto-mode-alist '(".gitlab-ci.yml" . gitlab-ci-mode))
 
 ;;;;             ;;;;
 ;; typescript mode ;;
@@ -220,6 +202,10 @@
   ;; `M-x package-install [ret] company`
   (company-mode +1))
 
+
+(defvaralias 'c-basic-offset 'tab-width)
+(defvaralias 'cperl-indent-level 'tab-width)
+
 ;; aligns annotation to the right hand side
 (setq company-tooltip-align-annotations t)
 
@@ -228,9 +214,11 @@
 
 (add-hook 'typescript-mode-hook #'setup-tide-mode)
 
+
 ;;;;      ;;;;
 ;; lua mode ;;
 ;;;;      ;;;;
+
 
 (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
 (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
@@ -240,95 +228,69 @@
 (add-hook 'lua-mode-hook (lambda ()
                            (company-lua)))
 
-;;;;     ;;;;
-;; go mode ;;
-;;;;     ;;;;
+;;;;      ;;;;
+;; lsp mode ;;
+;;;;      ;;;;
 
-;; (use-package lsp-mode
-;;              :commands (lsp lsp-deferred))
-;; (add-hook 'go-mode-hook #'lsp-deferred)
-;; (use-package lsp-ui
-;;              :commands lsp-ui-mode)
-;; (use-package company-lsp
-;;              :commands company-lsp)
+(use-package lsp-mode
+  :config
+  (setq lsp-prefer-flymake nil ;; Prefer using lsp-ui (flycheck) over flymake.
+        lsp-enable-xref t)
 
-;; (setq go-tab-width 4)
-;; (defun set-exec-path-from-shell-PATH ()
-;;   (let ((path-from-shell (replace-regexp-in-string
-;;                           "[ \t\n]*$"
-;;                           ""
-;;                           (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
-;;     (setenv "PATH" path-from-shell)
-;;     (setq eshell-path-env path-from-shell) ; for eshell users
-;;     (setq exec-path (split-string path-from-shell path-separator))))
+  (add-hook 'python-mode-hook #'lsp))
 
-;; (when window-system (set-exec-path-from-shell-PATH))
-;; (setenv "GOPATH" "/Users/moo7594/Development/gocode")
+(use-package lsp-ui
+  :requires lsp-mode flycheck
+  :config
 
-;; (defun my-go-mode-hook ()
-;;   ; Use goimports instead of go-fmt
-;;   (setq gofmt-command "goimports")
-;;   ; Call Gofmt before saving
-;;   (add-hook 'before-save-hook 'gofmt-before-save)
-;;   ; Customize compile command to run go build
-;;   (if (not (string-match "go" compile-command))
-;;       (set (make-local-variable 'compile-command)
-;;            "go build -v && go test -v && go vet"))
-;;   ; Godef jump key binding
-;;   (local-set-key (kbd "M-.") 'godef-jump)
-;;   (local-set-key (kbd "M-*") 'pop-tag-mark)
-;;   (local-set-key (kbd "C-c C-f p") 'goprintf)
-;;   (local-set-key (kbd "C-c C-f s") 'gosprintf)
-;;   (local-set-key (kbd "C-c C-f e") 'goerrorf)
-;;   (local-set-key (kbd "C-c e") 'goerr)
-;;   (local-set-key (kbd "C-c o") 'gonotok))
-;; (add-hook 'go-mode-hook 'my-go-mode-hook)
+  (setq lsp-ui-doc-enable t
+        lsp-ui-doc-use-childframe t
+        lsp-ui-doc-position 'top
+        lsp-ui-doc-include-signature t
+        lsp-ui-sideline-enable nil
+        lsp-ui-flycheck-enable t
+        lsp-ui-flycheck-list-position 'right
+        lsp-ui-flycheck-live-reporting t
+        lsp-ui-peek-enable t
+        lsp-ui-peek-list-width 60
+        lsp-ui-peek-peek-height 25)
 
-;; (defun goprintf ()
-;;   (interactive)
-;;   (insert "fmt.Printf(\"\\n\")")
-;;   (backward-char 4))
-;; (defun gosprintf ()
-;;   (interactive)
-;;   (insert "fmt.Sprintf(\"\\n\")")
-;;   (backward-char 4))
-;; (defun goerrorf ()
-;;   (interactive)
-;;   (insert "fmt.Errorf(\": %s\", err)")
-;;   (backward-char 11))
-;; (defun goerr ()
-;;   (interactive)
-;;   (insert "if err != nil {}")
-;;   (backward-char 1)
-;;   (newline nil 1)
-;;   (insert "return nil, err")
-;;   (next-line 1 1)
-;;   (newline nil 1))
-;; (defun gonotok ()
-;;   (interactive)
-;;   (insert "if !ok {}")
-;;   (backward-char 1)
-;;   (newline nil 1)
-;;   (insert "return nil, fmt.Errorf(\"was not ok\\n\")")
-;;   (next-line 1 1)
-;;   (newline nil 1))
+  ;; Remap keys for xref find defs to use the LSP UI peek mode.
+  ;;(define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  ;;(define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
 
-;;;;            ;;;;
-;; terraform mode ;;
-;;;;            ;;;;
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
-;; (load-file "./.emacs.d/terraform-macros.el")
-;; (defun tf-mode-hook ()
-;;   (local-set-key (kbd "C-c e") 'tf-interpolation)
-;;   (local-set-key (kbd "C-c v") 'tf-variable)
-;;   (local-set-key (kbd "C-c o") 'tf-output)
-;;   (local-set-key (kbd "C-c f") 'terraform-format-buffer))
-;; (add-hook 'terraform-mode 'tf-mode-hook)
+(use-package company
+  :config
+  (setq company-idle-delay 0.3)
 
-;;;;             ;;;;
-;; better defaults ;;
-;;;;             ;;;;
+  (global-company-mode 1)
 
+  (global-set-key (kbd "C-<tab>") 'company-complete))
+
+(use-package company-lsp
+  :requires company
+  :config
+  (push 'company-lsp company-backends)
+
+   ;; Disable client-side cache because the LSP server does a better job.
+  (setq company-transformers nil
+        company-lsp-async t
+        company-lsp-cache-candidates nil))
+
+;;;;                  ;;;;
+;; custom set varibales ;;
+;;;;                  ;;;;
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (flymake-lua company-lua lua-mode tide typescript-mode indium company-tern xref-js2 js2-refactor js2-mode dockerfile-mode terraform-mode gitlab-ci-mode heroku-theme better-defaults yasnippet yaml-mode use-package neotree lsp-ui lsp-treemacs flycheck exec-path-from-shell elmacro company-lsp auto-complete))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
