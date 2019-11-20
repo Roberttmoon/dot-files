@@ -1,4 +1,9 @@
-# -*- mode: gitignore; -*-
+# -*- mode: gitignore-*-
+
+readme.org
+Readme.org
+README.org
+
 *~
 \#*\#
 /.emacs.desktop
@@ -43,3 +48,6 @@ flycheck_*.el
 
 # directory configuration
 .dir-locals.el
+
+.tern-port
+.indium.json
