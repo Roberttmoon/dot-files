@@ -29,6 +29,8 @@
     yaml-mode
     elmacro
     company
+    restclient
+    password-mode
     ;; terraform tools
     terraform-mode
     hcl-mode
@@ -166,6 +168,29 @@
 ;;   (local-set-key (kbd "C-c f") 'terraform-format-buffer))
 ;; (add-hook 'terraform-mode 'tf-mode-hook)
 
+;;;               ;;;
+;; rust-lang stuff ;;
+;;;               ;;;
+
+(add-hook 'rust-mode-hook 'cargo-minor-mode)
+
+(add-hook 'rust-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-c TAB") #'rust-format-buffer)))
+(defun indent-buffer ()
+  "Indent current buffer according to major mode."
+  (interactive)
+  (indent-region (point-min) (point-max)))
+
+(setq racer-cmd "~/.cargo/bin/racer") ;; Rustup binaries PATH
+(setq racer-rust-src-path "~/.cargo/bin/rust-src/src") ;; Rust source code PATH
+
+(add-hook 'rust-mode-hook #'racer-mode)
+(add-hook 'racer-mode-hook #'eldoc-mode)
+(add-hook 'racer-mode-hook #'company-mode)
+(add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
+
+
 ;;;;             ;;;;
 ;; better defaults ;;
 ;;;;             ;;;;
@@ -177,7 +202,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (password-store restclient neotree heroku-theme heroku better-defaults))))
+    (chicken-scheme geiser quack scheme-complete scheme-here go-autocomplete go-impl go-imports go-mode password-store restclient neotree heroku-theme heroku better-defaults))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

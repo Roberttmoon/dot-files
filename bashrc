@@ -5,6 +5,9 @@ BLUE="\[\e[34m\]"
 CYAN="\[\e[36m\]"
 GREEN="\[\e[32m\]"
 
+# emacs
+alias emacs='emacs -nw'
+
 # Brew
 if [ -f $(brew --prefix)/etc/bash_completion ]; then
   . $(brew --prefix)/etc/bash_completion
@@ -74,3 +77,6 @@ export GOROOT=/usr/local/go
 export GOPATH=~/Development/gocode
 export PATH=$PATH:$GOROOT/bin
 export PATH=$PATH:$GOPATH/bin
+
+# rust?
+export PATH="$HOME/.cargo/bin:$PATH"
