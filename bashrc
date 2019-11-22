@@ -9,6 +9,11 @@ BLUE="\[\e[34m\]"
 CYAN="\[\e[36m\]"
 GREEN="\[\e[32m\]"
 
+if [ ! -d "$HOME/bin/" ]; then
+    mkdir "$HOME/bin/"
+fi
+export PATH="$HOME/bin/:$PATH"
+
 # emacs
 alias emacs='emacs -nw'
 
@@ -33,6 +38,7 @@ mkmd () { # $1 input org file, $2 output md file
 
 # Bash Stuff
 export HISTCONTROL=ignoreboth:erasedups
+export HISTFILESIZE=10000000
 
 __ps1_on () {
     items_on="$(__git_ps1)"
@@ -59,9 +65,9 @@ vact() {
 
 vinst() {
   if [ ! -d 'venv' ]; then
-    virtualenv venv
-    if [ ! -f 'requirements.txt' ]; then
-      pip install -r requirements.txt
+    virtualenv -p python3 venv
+    if [ -f 'requirements.txt' ]; then
+      pip3 install -r requirements.txt
     fi
   fi
   vact
@@ -102,3 +108,5 @@ git_whoops () { # $1 file that is to be removed form history
             --prune-empty --tag-name-filter cat -- --all
     fi
 }
+
+source "$HOME/.work"
