@@ -12,9 +12,7 @@ deploy_dot_file () { # $1 source file $2 symlink file name # $3 symlink filepath
     if [ -f "$3$2" -a  -s "$3$2" ]; then
 	mv "$3$2" "$3$2.backup"
     fi
-    if [ -z "$3" ]; then
-	ln -s "$1" "$3$2"
-    fi
+    ln -s "$1" "$3$2"
 }
 
 # deploy scritp   source file            symlink location  symlink filepath

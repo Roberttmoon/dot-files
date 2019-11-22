@@ -9,9 +9,6 @@
 (setq electric-pair-pairs '((?\" . ?\")
 			    (?\{ . ?\})))
 
-(require 'gnutls)
-(add-to-list 'gnutls-trustfiles "/usr/local/etc/openssl/cert.pem")
-
 ;;;;           ;;;;
 ;; package setup ;;
 ;;;;           ;;;;
@@ -35,6 +32,8 @@
     ;; tools
     neotree
     elmacro
+    restclient
+    password-mode
     better-defaults
     pass
     ;; lsp stuff
@@ -189,6 +188,28 @@
 			   (company-mode)))
 (define-key tern-mode-keymap (kbd "M-.") nil)
 (define-key tern-mode-keymap (kbd "M-,") nil)
+
+;;;               ;;;
+;; rust-lang stuff ;;
+;;;               ;;;
+
+(add-hook 'rust-mode-hook 'cargo-minor-mode)
+
+(add-hook 'rust-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-c TAB") #'rust-format-buffer)))
+(defun indent-buffer ()
+  "Indent current buffer according to major mode."
+  (interactive)
+  (indent-region (point-min) (point-max)))
+
+(setq racer-cmd "~/.cargo/bin/racer") ;; Rustup binaries PATH
+(setq racer-rust-src-path "~/.cargo/bin/rust-src/src") ;; Rust source code PATH
+
+(add-hook 'rust-mode-hook #'racer-mode)
+(add-hook 'racer-mode-hook #'eldoc-mode)
+(add-hook 'racer-mode-hook #'company-mode)
+(add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
 
 ;;;;             ;;;;
 ;; typescript mode ;;

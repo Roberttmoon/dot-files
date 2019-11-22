@@ -9,12 +9,13 @@ BLUE="\[\e[34m\]"
 CYAN="\[\e[36m\]"
 GREEN="\[\e[32m\]"
 
-# Path extention
 if [ ! -d "$HOME/bin/" ]; then
     mkdir "$HOME/bin/"
 fi
-
 export PATH="$HOME/bin/:$PATH"
+
+# emacs
+alias emacs='emacs -nw'
 
 # Brew
 if [ -f $(brew --prefix)/etc/bash_completion ]; then
@@ -64,9 +65,9 @@ vact() {
 
 vinst() {
   if [ ! -d 'venv' ]; then
-    virtualenv venv
-    if [ ! -f 'requirements.txt' ]; then
-      pip install -r requirements.txt
+    virtualenv -p python3 venv
+    if [ -f 'requirements.txt' ]; then
+      pip3 install -r requirements.txt
     fi
   fi
   vact
@@ -87,6 +88,9 @@ export GOROOT=/usr/local/go
 export GOPATH=~/Development/gocode
 export PATH=$PATH:$GOROOT/bin
 export PATH=$PATH:$GOPATH/bin
+
+# rust?
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # tree stuff
 alias treejs='echo "skipping node_moudles" && tree -a -I ".git|node_modules"'
