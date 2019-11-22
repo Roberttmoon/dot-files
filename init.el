@@ -24,26 +24,19 @@
 (defvar myPackages
   '(;; system packages
     use-package
-<<<<<<< HEAD
-    neotree
-=======
->>>>>>> 2e019ffbad2352921ab9542559163d9d3af2a37d
     flycheck
     company
     auto-complete
     yasnippet
     exec-path-from-shell
     yaml-mode
-<<<<<<< HEAD
     elmacro
     better-defaults
-=======
     ;; tools
     neotree
     elmacro
     better-defaults
     pass
->>>>>>> 2e019ffbad2352921ab9542559163d9d3af2a37d
     ;; lsp stuff
     lsp-mode
     lsp-ui
