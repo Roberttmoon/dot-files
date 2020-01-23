@@ -126,6 +126,9 @@
 (when (memq window-system '(mac x))
   (exec-path-from-shell-initialize))
 
+(when (memq window-system '(mac x))
+  (setq exec-path (append "/usr/local/bin/aspell" exec-path)))
+
 ;; Elisp
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
@@ -154,41 +157,6 @@
 ;;;;        ;;;;
 (add-hook 'sh-mode-hook 'flycheck-mode)
 
-
-;;;;             ;;;;
-;; javascript mode ;;
-;;;;             ;;;;
-
-(require 'js2-mode)
- 
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-(add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
-
-(require 'js2-refactor)
-(require 'xref-js2)
-
-(add-hook 'js2-mode-hook #'js2-refactor-mode)
-(js2r-add-keybindings-with-prefix "C-c C-r")
-(define-key js2-mode-map (kbd "C-k") #'js2r-kill)
-
-(define-key js-mode-map (kbd "M-.") nil)
-(add-hook 'js2-mode-hook (lambda ()
-			   (set-variable 'js2-strict-missing-semi-warning nil)
-			   (set-variable 'indent-tabs-mode nil)
-			   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
-
-;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
-
-(require 'company)
-(require 'company-tern)
-(add-to-list 'company-backends 'company-tern)
-(add-hook 'js2-mode-hook (lambda ()
-			   (setq js2-basic-offset 2)
-			   (tern-mode)
-			   (company-mode)))
-(define-key tern-mode-keymap (kbd "M-.") nil)
-(define-key tern-mode-keymap (kbd "M-,") nil)
-
 ;;;               ;;;
 ;; rust-lang stuff ;;
 ;;;               ;;;
@@ -211,39 +179,9 @@
 (add-hook 'racer-mode-hook #'company-mode)
 (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
 
-;;;;             ;;;;
-;; typescript mode ;;
-;;;;             ;;;;
-
-(defun setup-tide-mode ()
-  (interactive)
-  (tide-setup)
-  (flycheck-mode +1)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  (eldoc-mode +1)
-  (tide-hl-identifier-mode +1)
-  ;; company is an optional dependency. You have to
-  ;; install it separately via package-install
-  ;; `M-x package-install [ret] company`
-  (company-mode +1))
-
-
-(defvaralias 'c-basic-offset 'tab-width)
-(defvaralias 'cperl-indent-level 'tab-width)
-
-;; aligns annotation to the right hand side
-(setq company-tooltip-align-annotations t)
-
-;; formats the buffer before saving
-(add-hook 'before-save-hook 'tide-format-before-save)
-
-(add-hook 'typescript-mode-hook #'setup-tide-mode)
-
-
 ;;;;      ;;;;
 ;; lua mode ;;
 ;;;;      ;;;;
-
 
 (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
 (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
@@ -262,7 +200,9 @@
   (setq lsp-prefer-flymake nil ;; Prefer using lsp-ui (flycheck) over flymake.
         lsp-enable-xref t)
 
-  (add-hook 'python-mode-hook #'lsp))
+  (add-hook 'python-mode-hook #'lsp)
+  (add-hook 'javascript-mode 'lsp)
+  (add-hook 'typescript-mode-hook 'lsp))
 
 (use-package lsp-ui
   :requires lsp-mode flycheck
@@ -315,7 +255,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (flymake-lua company-lua lua-mode tide typescript-mode indium company-tern xref-js2 js2-refactor js2-mode dockerfile-mode terraform-mode gitlab-ci-mode heroku-theme better-defaults yasnippet yaml-mode use-package neotree lsp-ui lsp-treemacs flycheck exec-path-from-shell elmacro company-lsp auto-complete))))
+    (magit clojure-mode flymake-lua company-lua lua-mode tide typescript-mode indium company-tern xref-js2 js2-refactor js2-mode dockerfile-mode terraform-mode gitlab-ci-mode heroku-theme better-defaults yasnippet yaml-mode use-package neotree lsp-ui lsp-treemacs flycheck exec-path-from-shell elmacro company-lsp auto-complete))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

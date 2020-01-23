@@ -21,5 +21,5 @@ deploy_dot_file   $(pwd)/bashrc          ".bashrc"         "$HOME/"
 deploy_dot_file   $(pwd)/gitignore       ".gitignore"      "$HOME/"
 deploy_dot_file   $(pwd)/init.el         "init.el"         "$HOME/.emacs.d/"
 deploy_dot_file   $(pwd)/tmux.conf       ".tmux.conf"      "$HOME/"
-deploy_dot_file   $(pwd)/work            ".work"           "$HOME/"
+# deploy_dot_file   $(pwd)/work            ".work"           "$HOME/"         ## dont use this if you already have a .work file
 deploy_dot_file   $(pwd)/ispell_english  ".ispell_english" "$HOME/"
