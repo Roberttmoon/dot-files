@@ -1,5 +1,7 @@
 # -*- mode: gitignore-*-
 
+.DS_Store
+
 readme.org
 Readme.org
 README.org
@@ -51,3 +53,7 @@ flycheck_*.el
 
 .tern-port
 .indium.json
+
+#jetbranes ide stuff
+.idea/
+.idea/*

@@ -200,6 +200,8 @@
   (setq lsp-prefer-flymake nil ;; Prefer using lsp-ui (flycheck) over flymake.
         lsp-enable-xref t)
 
+  (setq lsp-keymap-prefix "C-c C-l")
+
   (add-hook 'python-mode-hook #'lsp)
   (add-hook 'javascript-mode 'lsp)
   (add-hook 'typescript-mode-hook 'lsp))
@@ -255,7 +257,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (magit clojure-mode flymake-lua company-lua lua-mode tide typescript-mode indium company-tern xref-js2 js2-refactor js2-mode dockerfile-mode terraform-mode gitlab-ci-mode heroku-theme better-defaults yasnippet yaml-mode use-package neotree lsp-ui lsp-treemacs flycheck exec-path-from-shell elmacro company-lsp auto-complete))))
+    (powershell ejson-mode flycheck-demjsonlint json-mode json-navigator json-reformat jsonl magit clojure-mode flymake-lua company-lua lua-mode tide typescript-mode indium company-tern xref-js2 js2-refactor js2-mode dockerfile-mode terraform-mode gitlab-ci-mode heroku-theme better-defaults yasnippet yaml-mode use-package neotree lsp-ui lsp-treemacs flycheck exec-path-from-shell elmacro company-lsp auto-complete))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
