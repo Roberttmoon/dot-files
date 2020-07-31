@@ -8,6 +8,7 @@
 (electric-pair-mode 1)
 (setq electric-pair-pairs '((?\" . ?\")
 			    (?\{ . ?\})))
+(delete-selection-mode 1)
 
 ;;;;           ;;;;
 ;; package setup ;;
