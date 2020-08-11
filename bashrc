@@ -65,10 +65,11 @@ vact() {
 
 vinst() {
   if [ ! -d 'venv' ]; then
-    virtualenv -p python3 venv
-    if [ -f 'requirements.txt' ]; then
-      pip3 install -r requirements.txt
-    fi
+      virtualenv -p python3 venv
+      pip3 install --upgrade pip
+      if [ -f 'requirements.txt' ]; then
+          pip3 install -r requirements.txt
+      fi
   fi
   vact
 }
