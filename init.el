@@ -15,8 +15,8 @@
 ;;;;           ;;;;
 
 (require 'package)
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("elpa" . "https://elpa.gnu.org/packages/"))
 
 (package-initialize)
 (defvar myPackages
@@ -40,7 +40,6 @@
     ;; lsp stuff
     lsp-mode
     lsp-ui
-    company-lsp
     lsp-treemacs
     ;; themes!
     heroku-theme
@@ -56,11 +55,14 @@
     js2-mode
     js2-refactor
     xref-js2
-    company-tern
     indium
     ;; typescript tools
     typescript-mode
     tide
+    ;; go stuff
+    go-mode
+    go-fill-struct
+    flycheck-golangci-lint
     ;; lua tools
     lua-mode
     company-lua
@@ -158,28 +160,6 @@
 ;;;;        ;;;;
 (add-hook 'sh-mode-hook 'flycheck-mode)
 
-;;;               ;;;
-;; rust-lang stuff ;;
-;;;               ;;;
-
-(add-hook 'rust-mode-hook 'cargo-minor-mode)
-
-(add-hook 'rust-mode-hook
-          (lambda ()
-            (local-set-key (kbd "C-c TAB") #'rust-format-buffer)))
-(defun indent-buffer ()
-  "Indent current buffer according to major mode."
-  (interactive)
-  (indent-region (point-min) (point-max)))
-
-(setq racer-cmd "~/.cargo/bin/racer") ;; Rustup binaries PATH
-(setq racer-rust-src-path "~/.cargo/bin/rust-src/src") ;; Rust source code PATH
-
-(add-hook 'rust-mode-hook #'racer-mode)
-(add-hook 'racer-mode-hook #'eldoc-mode)
-(add-hook 'racer-mode-hook #'company-mode)
-(add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
-
 ;;;;      ;;;;
 ;; lua mode ;;
 ;;;;      ;;;;
@@ -191,6 +171,17 @@
 (add-hook 'lua-mode-hook 'flycheck-mode)
 (add-hook 'lua-mode-hook (lambda ()
                            (company-lua)))
+
+;;;;     ;;;;
+;; go mode ;;
+;;;;     ;;;;
+
+;; Set up before-save hooks to format buffer and add/delete imports.
+;; Make sure you don't have other gofmt/goimports hooks enabled.
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
 ;;;;      ;;;;
 ;; lsp mode ;;
@@ -204,10 +195,9 @@
   (setq lsp-keymap-prefix "C-c C-l")
 
   (add-hook 'python-mode-hook #'lsp)
-  (add-hook 'javascript-mode 'lsp)
-  (add-hook 'typescript-mode-hook 'lsp)
-  (add-hook 'haskell-mode-hook #'lsp)
-  (add-hook 'haskell-literate-mode-hook #'lsp))
+  (add-hook 'javascript-mode #'lsp)
+  (add-hook 'typescript-mode-hook #'lsp)
+  (add-hook 'go-mode-hook #'lsp-deferred))
 
 (use-package lsp-ui
   :requires lsp-mode flycheck
@@ -233,21 +223,12 @@
 
 (use-package company
   :config
-  (setq company-idle-delay 0.3)
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 1)
 
   (global-company-mode 1)
 
   (global-set-key (kbd "C-<tab>") 'company-complete))
-
-(use-package company-lsp
-  :requires company
-  :config
-  (push 'company-lsp company-backends)
-
-   ;; Disable client-side cache because the LSP server does a better job.
-  (setq company-transformers nil
-        company-lsp-async t
-        company-lsp-cache-candidates nil))
 
 ;;;;                  ;;;;
 ;; custom set varibales ;;
@@ -258,9 +239,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("928ed6d4997ec3cdce10b65c59d0f966a61792a69b84c47155cb5578ce2972be" "76b4632612953d1a8976d983c4fdf5c3af92d216e2f87ce2b0726a1f37606158" default))
  '(package-selected-packages
-   (quote
-    (lsp-mode haskell-mode lsp-haskell mu4e-alert mu4e-conversation mu4e-jump-to-list mu4e-maildirs-extension mu4e-overview mu4e-query-fragments powershell ejson-mode flycheck-demjsonlint json-mode json-navigator json-reformat jsonl magit clojure-mode flymake-lua company-lua lua-mode tide typescript-mode indium company-tern xref-js2 js2-refactor js2-mode dockerfile-mode terraform-mode gitlab-ci-mode heroku-theme better-defaults yasnippet yaml-mode use-package neotree lsp-ui lsp-treemacs flycheck exec-path-from-shell elmacro company-lsp auto-complete))))
+   '(k8s-mode kubernetes twilight-bright-theme php-mode go-eldoc company-jedi flycheck-golangci-lint flymake-golangci go-fill-struct restclient mu4e-alert mu4e-conversation mu4e-jump-to-list mu4e-maildirs-extension mu4e-overview mu4e-query-fragments powershell ejson-mode flycheck-demjsonlint json-mode json-navigator json-reformat jsonl magit clojure-mode flymake-lua company-lua lua-mode tide typescript-mode indium company-tern xref-js2 js2-refactor js2-mode dockerfile-mode terraform-mode gitlab-ci-mode heroku-theme better-defaults yasnippet yaml-mode use-package neotree lsp-ui lsp-treemacs flycheck exec-path-from-shell elmacro company-lsp auto-complete)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

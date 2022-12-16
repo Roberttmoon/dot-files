@@ -85,7 +85,7 @@ __kube_ps1 () {
 # go stuff
 alias ggi="go get -insecure"
 
-export GOROOT=/usr/local/go            
+export GOROOT=/usr/local/go
 export GOPATH=~/Development/gocode
 export PATH=$PATH:$GOROOT/bin
 export PATH=$PATH:$GOPATH/bin
@@ -99,6 +99,8 @@ alias treepy='echo "skipping venv" && tree -a -I ".git|venv"'
 alias treego='echo "skipping vender" && tree -a -I ".git|vender"'
 
 # git stuff
+alias gfap='git pull --all -p'
+
 git_whoops () { # $1 file that is to be removed form history
     if [ -z $1 ]; then
         echo 'please list a path to remvoe from git'
@@ -110,10 +112,12 @@ git_whoops () { # $1 file that is to be removed form history
     fi
 }
 
+
 source "$HOME/.work"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-[ -f "/Users/Moon/.ghcup/env" ] && source "/Users/Moon/.ghcup/env" # ghcup-env
-[ -f "/Users/Moon/.ghcup/env" ] && source "/Users/Moon/.ghcup/env" # ghcup-env
+
+
+source /Users/rmoon/.docker/init-bash.sh || true # Added by Docker Desktop
