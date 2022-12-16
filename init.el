@@ -205,7 +205,9 @@
 
   (add-hook 'python-mode-hook #'lsp)
   (add-hook 'javascript-mode 'lsp)
-  (add-hook 'typescript-mode-hook 'lsp))
+  (add-hook 'typescript-mode-hook 'lsp)
+  (add-hook 'haskell-mode-hook #'lsp)
+  (add-hook 'haskell-literate-mode-hook #'lsp))
 
 (use-package lsp-ui
   :requires lsp-mode flycheck
@@ -258,7 +260,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (mu4e-alert mu4e-conversation mu4e-jump-to-list mu4e-maildirs-extension mu4e-overview mu4e-query-fragments powershell ejson-mode flycheck-demjsonlint json-mode json-navigator json-reformat jsonl magit clojure-mode flymake-lua company-lua lua-mode tide typescript-mode indium company-tern xref-js2 js2-refactor js2-mode dockerfile-mode terraform-mode gitlab-ci-mode heroku-theme better-defaults yasnippet yaml-mode use-package neotree lsp-ui lsp-treemacs flycheck exec-path-from-shell elmacro company-lsp auto-complete))))
+    (lsp-mode haskell-mode lsp-haskell mu4e-alert mu4e-conversation mu4e-jump-to-list mu4e-maildirs-extension mu4e-overview mu4e-query-fragments powershell ejson-mode flycheck-demjsonlint json-mode json-navigator json-reformat jsonl magit clojure-mode flymake-lua company-lua lua-mode tide typescript-mode indium company-tern xref-js2 js2-refactor js2-mode dockerfile-mode terraform-mode gitlab-ci-mode heroku-theme better-defaults yasnippet yaml-mode use-package neotree lsp-ui lsp-treemacs flycheck exec-path-from-shell elmacro company-lsp auto-complete))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
