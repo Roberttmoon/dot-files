@@ -2,10 +2,6 @@
 
 .DS_Store
 
-readme.org
-Readme.org
-README.org
-
 *~
 \#*\#
 /.emacs.desktop
@@ -57,3 +53,6 @@ flycheck_*.el
 #jetbranes ide stuff
 .idea/
 .idea/*
+
+# terraform
+*tf-plan
