@@ -101,6 +101,35 @@ alias treego='echo "skipping vender" && tree -a -I ".git|vender"'
 # git stuff
 alias gfap='git pull --all -p'
 
+giterate () { # $1 commit message
+    commit_msg="$*"
+
+    if [ -z "$commit_msg" ]; then
+        echo 'a commit message is required'
+        return 1
+    fi
+    
+    git add .
+    git status
+    while true; do
+        read -p "commit with msg '$commit_msg'? " yn
+        case $yn in
+            [Yy]* )
+                break
+                ;;
+            [Nn]* )
+                echo 'cancling giteration'
+                git reset
+                return 0
+                ;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+    git commit -m "$commit_msg"
+    git pull
+    git push
+}
+
 git_whoops () { # $1 file that is to be removed form history
     if [ -z $1 ]; then
         echo 'please list a path to remvoe from git'

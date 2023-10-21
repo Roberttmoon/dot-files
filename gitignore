@@ -53,6 +53,8 @@ flycheck_*.el
 #jetbranes ide stuff
 .idea/
 .idea/*
+.fleet/
+.fleet/*
 
 # terraform
 *tf-plan

@@ -37,6 +37,7 @@
     password-mode
     better-defaults
     pass
+    kubernetes
     ;; lsp stuff
     lsp-mode
     lsp-ui
@@ -114,9 +115,10 @@
 ;;;;          ;;;;
 (load-theme 'material t) ;; load material theme
 
-(setq inhibit-startup-message t) ;; hide the startup message
+(setq inhibit-startup-message t)    ;; hide the startup message
+(setq initial-major-mode 'org-mode) ;; start scratch in org mode
 
-(global-linum-mode t) ;; enable line numbers globally
+(display-line-numbers-mode t) ;; enable line numbers globally
 (setq-default indent-tabs-mode nil)
 
 
@@ -229,6 +231,7 @@
   (global-company-mode 1)
 
   (global-set-key (kbd "C-<tab>") 'company-complete))
+
 
 ;;;;                  ;;;;
 ;; custom set varibales ;;
