@@ -15,3 +15,5 @@ complete -C /usr/local/bin/vault vault
 export PATH="/usr/local/opt/mysql-client/bin:$PATH"
 
 source /Users/rmoon/.docker/init-bash.sh || true # Added by Docker Desktop
+
+[[ -f ~/.bashrc ]] && source ~/.bashrc # ghcup-env
